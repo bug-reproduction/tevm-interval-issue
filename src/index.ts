@@ -20,6 +20,7 @@ async function main() {
 
 	provider = ((p) => {
 		return {
+			// fix tevm not supporting "earliest"
 			request(args: {method: string; params?: any[]}) {
 				if (args.method === 'eth_getBlockByNumber' && args.params?.[0] === 'earliest') {
 					return p.request({
