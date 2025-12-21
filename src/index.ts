@@ -1,6 +1,8 @@
-import {createMemoryClient, MemoryClient} from '@tevm/memory-client';
-import {createPublicClient, createWalletClient, custom, defineChain} from 'viem';
-import {privateKeyToAccount} from 'viem/accounts';
+import {createMemoryClient} from '@tevm/memory-client';
+import {extendProviderWithAccounts} from 'eip-1193-accounts-wrapper';
+import {setupEnvironment} from '@rocketh/web';
+import {config, extensions} from 'template-ethereum-contracts/rocketh/config.js';
+import DeployScript from 'template-ethereum-contracts/deploy/001_deploy_greetings_registry.js';
 
 async function main() {
 	const client = createMemoryClient({
@@ -8,42 +10,20 @@ async function main() {
 			type: 'auto',
 		},
 	});
-	// Initialize client
 	await client.tevmReady();
 
-	const chainId = await client.request({method: 'eth_chainId'});
-	console.log('Chain ID', chainId);
-
-	const chain = defineChain({
-		id: parseInt(chainId, 16),
-		name: 'TevmMemoryChain',
-		nativeCurrency: {name: 'Ether', symbol: 'ETH', decimals: 18},
-		rpcUrls: {default: {http: ['']}},
+	const provider = extendProviderWithAccounts(client as any, {
+		accounts: {
+			mnemonic: 'test test test test test test test test test test test junk',
+		},
 	});
 
-	const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
-	const account = privateKeyToAccount(privateKey);
-
-	const walletClient = createWalletClient({
-		chain,
-		account,
-		transport: custom(client),
+	const {loadAndExecuteDeploymentsFromModules} = setupEnvironment(config, extensions);
+	await loadAndExecuteDeploymentsFromModules([{id: 'DeployScript', module: DeployScript}], {
+		provider: provider,
+		environment: 'tevm',
+		logLevel: 7,
 	});
-	const publicClient = createPublicClient({
-		chain,
-		transport: custom(client),
-	});
-
-	const txHash = await walletClient.sendTransaction({
-		to: account.address,
-		value: 1000000000000000000n, // 1 ETH
-	});
-	console.log('tx hash:', txHash);
-
-	const receipt = await publicClient.waitForTransactionReceipt({
-		hash: txHash,
-	});
-	console.log(receipt);
 }
 
 main();

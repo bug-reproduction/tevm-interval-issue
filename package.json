@@ -2,8 +2,13 @@
   "name": "tevm-transaction-not-found",
   "version": "0.0.0",
   "packageManager": "pnpm@10.24.0",
+  "type": "module",
   "dependencies": {
+    "@rocketh/web": "^0.17.5",
     "@tevm/memory-client": "1.0.0-next.148",
+    "eip-1193-accounts-wrapper": "^0.0.2",
+    "rocketh": "^0.17.5",
+    "template-ethereum-contracts": "^0.0.3",
     "viem": "~2.37.9"
   },
   "devDependencies": {
