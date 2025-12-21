@@ -10,7 +10,6 @@ async function main() {
 			type: 'auto',
 		},
 	});
-	await client.tevmReady();
 
 	let provider = extendProviderWithAccounts(client as any, {
 		accounts: {
