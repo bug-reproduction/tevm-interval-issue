@@ -43,17 +43,28 @@ async function main() {
 		} as any;
 	})(provider);
 
-	const hash = await provider.request({
-		method: 'eth_sendRawTransaction',
-		params: [
-			'0x02f86b820384808080825208943fab184622dc19b6109349b94811493bf2a45362872386f26fc1000080c080a0ea1b2974ab2beb274ffc4847e1acf226001de6fb1dcde0cf10178b8f29e3c05aa017a02e1f90cf9c5df1d8f9431ca1bb586e8f5abca7ae52ccec9f201d553987a4',
-		],
-	});
+	// const gasPrice = await provider.request({
+	// 	method: 'eth_gasPrice',
+	// });
+	// console.log(gasPrice);
 
-	const tx = await provider.request({
-		method: 'eth_getTransactionByHash',
-		params: [hash],
-	});
+	// const feeHistory = await provider.request({
+	// 	method: 'eth_feeHistory',
+	// 	params: ['0x1', 'latest', [30, 70, 90]],
+	// });
+	// console.log(feeHistory);
+
+	// const hash = await provider.request({
+	// 	method: 'eth_sendRawTransaction',
+	// 	params: [
+	// 		'0x02f86b820384808080825208943fab184622dc19b6109349b94811493bf2a45362872386f26fc1000080c080a0ea1b2974ab2beb274ffc4847e1acf226001de6fb1dcde0cf10178b8f29e3c05aa017a02e1f90cf9c5df1d8f9431ca1bb586e8f5abca7ae52ccec9f201d553987a4',
+	// 	],
+	// });
+
+	// const tx = await provider.request({
+	// 	method: 'eth_getTransactionByHash',
+	// 	params: [hash],
+	// });
 
 	// const {loadAndExecuteDeploymentsFromModules} = setupEnvironment(config, extensions);
 	// await loadAndExecuteDeploymentsFromModules([{id: 'DeployScript', module: DeployScript}], {
@@ -61,6 +72,18 @@ async function main() {
 	// 	environment: 'tevm',
 	// 	logLevel: 7,
 	// });
+
+	const hashForFactory = await provider.request({
+		method: 'eth_sendRawTransaction',
+		params: [
+			'0xf8a58085174876e800830186a08080b853604580600e600039806000f350fe7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf31ba02222222222222222222222222222222222222222222222222222222222222222a02222222222222222222222222222222222222222222222222222222222222222',
+		],
+	});
+
+	const txForFactory = await provider.request({
+		method: 'eth_getTransactionByHash',
+		params: [hashForFactory],
+	});
 }
 
 main();
