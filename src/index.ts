@@ -27,17 +27,17 @@ async function main() {
 						params: ['0x0', args?.params[1]] as any,
 					});
 				}
-				if (args.method === 'eth_getTransactionByHash') {
-					try {
-						await p.request({
-							method: 'eth_getTransactionByHash',
-							params: args.params as any,
-						});
-					} catch (err) {
-						// console.error(err);
-						return null;
-					}
-				}
+				// if (args.method === 'eth_getTransactionByHash') {
+				// 	try {
+				// 		await p.request({
+				// 			method: 'eth_getTransactionByHash',
+				// 			params: args.params as any,
+				// 		});
+				// 	} catch (err) {
+				// 		// console.error(err);
+				// 		return null;
+				// 	}
+				// }
 				return p.request(args as any);
 			},
 		} as any;
