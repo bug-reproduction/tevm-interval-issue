@@ -43,12 +43,24 @@ async function main() {
 		} as any;
 	})(provider);
 
-	const {loadAndExecuteDeploymentsFromModules} = setupEnvironment(config, extensions);
-	await loadAndExecuteDeploymentsFromModules([{id: 'DeployScript', module: DeployScript}], {
-		provider: provider,
-		environment: 'tevm',
-		logLevel: 7,
+	const hash = await provider.request({
+		method: 'eth_sendRawTransaction',
+		params: [
+			'0x02f86b820384808080825208943fab184622dc19b6109349b94811493bf2a45362872386f26fc1000080c080a0ea1b2974ab2beb274ffc4847e1acf226001de6fb1dcde0cf10178b8f29e3c05aa017a02e1f90cf9c5df1d8f9431ca1bb586e8f5abca7ae52ccec9f201d553987a4',
+		],
 	});
+
+	const tx = await provider.request({
+		method: 'eth_getTransactionByHash',
+		params: [hash],
+	});
+
+	// const {loadAndExecuteDeploymentsFromModules} = setupEnvironment(config, extensions);
+	// await loadAndExecuteDeploymentsFromModules([{id: 'DeployScript', module: DeployScript}], {
+	// 	provider: provider,
+	// 	environment: 'tevm',
+	// 	logLevel: 7,
+	// });
 }
 
 main();
