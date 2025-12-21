@@ -21,12 +21,23 @@ async function main() {
 	provider = ((p) => {
 		return {
 			// fix tevm not supporting "earliest"
-			request(args: {method: string; params?: any[]}) {
+			async request(args: {method: string; params?: any[]}) {
 				if (args.method === 'eth_getBlockByNumber' && args.params?.[0] === 'earliest') {
 					return p.request({
 						method: 'eth_getBlockByNumber',
 						params: ['0x0', args?.params[1]] as any,
 					});
+				}
+				if (args.method === 'eth_getTransactionByHash') {
+					try {
+						await p.request({
+							method: 'eth_getTransactionByHash',
+							params: args.params as any,
+						});
+					} catch (err) {
+						// console.error(err);
+						return null;
+					}
 				}
 				return p.request(args as any);
 			},
