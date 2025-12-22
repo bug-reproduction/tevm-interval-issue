@@ -8,13 +8,17 @@ import {createPublicClient, createWalletClient, custom, defineChain} from 'viem'
 import {createCurriedJSONRPC} from 'remote-procedure-call';
 
 async function main() {
-	const client = createMemoryClient({
-		miningConfig: {
-			type: 'auto',
-		},
-		// loggingLevel: 'debug',
-	});
-	// const client = createCurriedJSONRPC('http://localhost:8545');
+	const USE_ROCKETH_DEPLOYMENT = false;
+	const USE_TEVM = true;
+
+	const client = USE_TEVM
+		? createMemoryClient({
+				miningConfig: {
+					type: 'auto',
+				},
+				// loggingLevel: 'debug',
+			})
+		: createCurriedJSONRPC('http://localhost:8545');
 
 	let provider: EIP1193ProviderWithoutEvents = client as any;
 	provider = ((p) => {
@@ -30,6 +34,10 @@ async function main() {
 						method: 'eth_getBlockByNumber',
 						params: ['0x0', args?.params[1]] as any,
 					});
+				}
+
+				if (args.method == 'eth_gasPrice') {
+					return `0x${BigInt(100000000000).toString(16)}`;
 				}
 
 				return p.request(args as any);
@@ -63,8 +71,6 @@ async function main() {
 		chain,
 	});
 
-	const USE_ROCKETH_DEPLOYMENT = false;
-
 	if (USE_ROCKETH_DEPLOYMENT) {
 		// deterministic factory
 
@@ -72,6 +78,9 @@ async function main() {
 			address: '0x4e59b44847b379578588920ca78fbf26c0b4956c',
 		});
 		if (!factoryExistingCode) {
+			const balanceBefore = await publicClient.getBalance({
+				address: '0x70997970c51812dc3a010c7d01b50e0d17dc79c8', // account 1
+			});
 			// send fund to factory deployer
 			console.log(`sending func`);
 			const fundingHash = await walletClient.sendTransaction({
@@ -80,6 +89,11 @@ async function main() {
 			});
 			// 0x02f87382038480843b9aca008483215600825209943fab184622dc19b6109349b94811493bf2a45362872386f26fc1000080c080a0b7c93f4fac496e24a613e85539c197e47b6ccbc3118a9257676ac543910e883ca079620bbe9c09fd7c343d305968621867d99c688d61f995cfea9e34da3f83bc61
 			await publicClient.waitForTransactionReceipt({hash: fundingHash});
+			const balanceAfter = await publicClient.getBalance({
+				address: '0x70997970c51812dc3a010c7d01b50e0d17dc79c8',
+			});
+
+			console.log(`amount used : ${balanceBefore - balanceAfter}`);
 		} else {
 			console.log(`deterministic factory already exists`);
 		}
@@ -134,7 +148,7 @@ async function main() {
 		await provider.request({
 			method: 'eth_sendRawTransaction',
 			params: [
-				'0x01f8cc82038402846ca716b182d7b494e7f1725e7734ce288f8367e1bb143e90bb3f051280b864368b87720000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000568656c6c6f000000000000000000000000000000000000000000000000000000c080a0d74258a7d1abc2b3ed7e61884fe0a3bc892989c40dbb616987a3f6f8bc4b1b0aa0242df9dd5f3bb70471164827b8e79ded657404956cf9690c771fde52f58ec8c0',
+				'0x01f8cd82038402851bf08eb00082d7b494e7f1725e7734ce288f8367e1bb143e90bb3f051280b864368b87720000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000568656c6c6f000000000000000000000000000000000000000000000000000000c001a02a9b7f5f6ac58675b0344a63e61d1abbe5704ef3dd9199f1072dd255c4d1044fa02dd28bb682fd87ffe3da0bf053535424fdaa7be9fe3f49e4ddd1f36cc3a100c8',
 			],
 		});
 
@@ -147,7 +161,7 @@ async function main() {
 					data: '0x5fdd59f8000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266',
 					to: '0xe7f1725e7734ce288f8367e1bb143e90bb3f0512',
 				},
-				'pending',
+				'latest',
 			],
 		});
 		console.log(result);
