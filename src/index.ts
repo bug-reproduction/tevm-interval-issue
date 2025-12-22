@@ -1,4 +1,4 @@
-import {createMemoryClient} from '@tevm/memory-client';
+import {createMemoryClient, MemoryClient} from '@tevm/memory-client';
 import {EIP1193ProviderWithoutEvents, extendProviderWithAccounts} from 'eip-1193-accounts-wrapper';
 import {setupEnvironment} from '@rocketh/web';
 import {config, extensions} from 'template-ethereum-contracts/rocketh/config.js';
@@ -8,7 +8,7 @@ import {createPublicClient, createWalletClient, custom, defineChain} from 'viem'
 import {createCurriedJSONRPC} from 'remote-procedure-call';
 
 async function main() {
-	const USE_ROCKETH_DEPLOYMENT = false;
+	const USE_ROCKETH_DEPLOYMENT = true;
 	const USE_TEVM = true;
 
 	const client = USE_TEVM
@@ -21,23 +21,12 @@ async function main() {
 		: createCurriedJSONRPC('http://localhost:8545');
 
 	let provider: EIP1193ProviderWithoutEvents = client as any;
+
 	provider = ((p) => {
 		return {
-			// fix tevm not supporting "earliest"
 			async request(args: {method: string; params?: any[]}) {
-				if (args.method == 'eth_sendRawTransaction' || args.method == 'eth_call') {
+				if (args.method == 'eth_sendRawTransaction') {
 					console.log(`calling ${args.method}...`, args.params);
-				}
-
-				if (args.method == 'eth_getBlockByNumber' && args.params?.[0] === 'earliest') {
-					return p.request({
-						method: 'eth_getBlockByNumber',
-						params: ['0x0', args?.params[1]] as any,
-					});
-				}
-
-				if (args.method == 'eth_gasPrice') {
-					return `0x${BigInt(100000000000).toString(16)}`;
 				}
 
 				return p.request(args as any);
@@ -50,6 +39,43 @@ async function main() {
 			mnemonic: 'test test test test test test test test test test test junk',
 		},
 	});
+
+	provider = ((p) => {
+		return {
+			// fix tevm not supporting "earliest"
+			async request(args: {method: string; params?: any[]}) {
+				if (
+					args.method == 'eth_sendTransaction' ||
+					args.method == 'eth_sendRawTransaction' ||
+					args.method == 'eth_call' ||
+					args.method == 'eth_getStorageAt'
+				) {
+					console.log(`calling ${args.method}...`, args.params);
+				}
+
+				if (args.method == 'eth_getBlockByNumber' && args.params?.[0] === 'earliest') {
+					return p.request({
+						method: 'eth_getBlockByNumber',
+						params: ['0x0', args?.params[1]] as any,
+					});
+				}
+
+				if (args.method == 'eth_sendTransaction') {
+					const newParam0 = {...(args.params![0] as any), gas: `0x${(5000000).toString(16)}`};
+					return p.request({
+						method: args.method,
+						params: [newParam0],
+					});
+				}
+
+				if (args.method == 'eth_gasPrice') {
+					return `0x${BigInt(100000000000).toString(16)}`;
+				}
+
+				return p.request(args as any);
+			},
+		} as any;
+	})(provider);
 
 	const chainId = await provider.request({method: 'eth_chainId'});
 	const chain = defineChain({
