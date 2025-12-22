@@ -7,6 +7,7 @@
     "@rocketh/web": "^0.17.7",
     "@tevm/memory-client": "1.0.0-next.148",
     "eip-1193-accounts-wrapper": "^0.0.5",
+    "remote-procedure-call": "^0.1.1",
     "rocketh": "^0.17.7",
     "template-ethereum-contracts": "^0.0.3",
     "viem": "~2.43.3"
