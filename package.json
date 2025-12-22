@@ -4,12 +4,12 @@
   "packageManager": "pnpm@10.24.0",
   "type": "module",
   "dependencies": {
-    "@rocketh/web": "^0.17.6",
+    "@rocketh/web": "^0.17.7",
     "@tevm/memory-client": "1.0.0-next.148",
-    "eip-1193-accounts-wrapper": "^0.0.3",
-    "rocketh": "^0.17.6",
+    "eip-1193-accounts-wrapper": "^0.0.5",
+    "rocketh": "^0.17.7",
     "template-ethereum-contracts": "^0.0.3",
-    "viem": "~2.43.2"
+    "viem": "~2.43.3"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",

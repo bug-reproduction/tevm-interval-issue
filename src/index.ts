@@ -9,6 +9,7 @@ async function main() {
 		miningConfig: {
 			type: 'auto',
 		},
+		// loggingLevel: 'debug',
 	});
 
 	let provider = extendProviderWithAccounts(client as any, {
@@ -54,17 +55,18 @@ async function main() {
 	// });
 	// console.log(feeHistory);
 
-	// const hash = await provider.request({
-	// 	method: 'eth_sendRawTransaction',
-	// 	params: [
-	// 		'0x02f86b820384808080825208943fab184622dc19b6109349b94811493bf2a45362872386f26fc1000080c080a0ea1b2974ab2beb274ffc4847e1acf226001de6fb1dcde0cf10178b8f29e3c05aa017a02e1f90cf9c5df1d8f9431ca1bb586e8f5abca7ae52ccec9f201d553987a4',
-	// 	],
-	// });
+	console.log(`send fund`);
+	const hash = await provider.request({
+		method: 'eth_sendRawTransaction',
+		params: [
+			'0x02f87382038480843b9ac9f9843b9aca01825208943fab184622dc19b6109349b94811493bf2a45362872386f26fc1000080c080a0a553177ec2f6086aca6fb93bfead1c059f0835247d4807d0a366d4b257dae225a00c926a27b212667377b95efa68c7fc8e2e8d9471f467a1862f93bef2cab8d062',
+		],
+	});
 
-	// const tx = await provider.request({
-	// 	method: 'eth_getTransactionByHash',
-	// 	params: [hash],
-	// });
+	const tx = await provider.request({
+		method: 'eth_getTransactionByHash',
+		params: [hash],
+	});
 
 	// const {loadAndExecuteDeploymentsFromModules} = setupEnvironment(config, extensions);
 	// await loadAndExecuteDeploymentsFromModules([{id: 'DeployScript', module: DeployScript}], {
@@ -73,6 +75,7 @@ async function main() {
 	// 	logLevel: 7,
 	// });
 
+	console.log(`create factory`);
 	const hashForFactory = await provider.request({
 		method: 'eth_sendRawTransaction',
 		params: [
