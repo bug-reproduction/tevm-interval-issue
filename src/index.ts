@@ -20,7 +20,7 @@ async function main() {
 	const memoryClient = createMemoryClient({
 		miningConfig: {
 			type: 'interval',
-			interval,
+			blockTime: interval,
 		},
 		// loggingLevel: 'debug',
 	});
