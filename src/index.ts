@@ -24,6 +24,10 @@ async function main() {
 		},
 		// loggingLevel: 'debug',
 	});
+	// setInterval(() => {
+	// 	console.log(`mining...`);
+	// 	memoryClient.tevmMine();
+	// }, interval);
 	const client = USE_TEVM ? memoryClient : createCurriedJSONRPC('http://localhost:8545');
 
 	let provider: EIP1193ProviderWithoutEvents = client as any;
