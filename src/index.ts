@@ -15,7 +15,7 @@ function wait(ms: number) {
 
 async function main() {
 	const USE_TEVM = true;
-	const MANUAL = false;
+	const MANUAL = true;
 
 	const interval = 2000;
 	const memoryClient = createMemoryClient({
