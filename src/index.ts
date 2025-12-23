@@ -16,10 +16,11 @@ function wait(ms: number) {
 async function main() {
 	const USE_TEVM = true;
 
+	const interval = 2000;
 	const memoryClient = createMemoryClient({
 		miningConfig: {
 			type: 'interval',
-			interval: 12000,
+			interval,
 		},
 		// loggingLevel: 'debug',
 	});
@@ -63,9 +64,8 @@ async function main() {
 
 	const txHash = await walletClient.sendTransaction({});
 
-	await wait(13000);
+	await wait(interval + 1000);
 	console.log(`should be mined by then`);
-	console.time('tx');
 	let receipt;
 	try {
 		receipt = await publicClient.getTransactionReceipt({hash: txHash});

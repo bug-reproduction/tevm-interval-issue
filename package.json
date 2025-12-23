@@ -22,5 +22,20 @@
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "dev": "as-soon -w src pnpm build"
+  },
+  "pnpm": {
+    "overrides": {
+      "@tevm/memory-client": "link:../../evmts/tevm-monorepo/packages/memory-client",
+      "@tevm/actions": "link:../../evmts/tevm-monorepo/packages/actions",
+      "@tevm/address": "link:../../evmts/tevm-monorepo/packages/address",
+      "@tevm/common": "link:../../evmts/tevm-monorepo/packages/common",
+      "@tevm/contract": "link:../../evmts/tevm-monorepo/packages/contract",
+      "@tevm/decorators": "link:../../evmts/tevm-monorepo/packages/decorators",
+      "@tevm/errors": "link:../../evmts/tevm-monorepo/packages/errors",
+      "@tevm/evm": "link:../../evmts/tevm-monorepo/packages/evm",
+      "@tevm/node": "link:../../evmts/tevm-monorepo/packages/node",
+      "@tevm/predeploys": "link:../../evmts/tevm-monorepo/packages/predeploys",
+      "@tevm/utils": "link:../../evmts/tevm-monorepo/packages/utils"
+    }
   }
 }
