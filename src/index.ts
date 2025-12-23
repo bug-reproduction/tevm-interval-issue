@@ -9,7 +9,7 @@ import {createCurriedJSONRPC} from 'remote-procedure-call';
 
 function wait(ms: number) {
 	return new Promise((resolve) => {
-		setTimeout(resolve);
+		setTimeout(resolve, ms);
 	});
 }
 
