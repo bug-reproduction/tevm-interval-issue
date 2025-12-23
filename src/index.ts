@@ -83,8 +83,6 @@ async function main() {
 			console.log(`receipt`, receipt);
 		}
 	}
-
-	console.timeEnd('tx');
 }
 
 main();
