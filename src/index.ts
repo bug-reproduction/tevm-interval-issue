@@ -15,19 +15,36 @@ function wait(ms: number) {
 
 async function main() {
 	const USE_TEVM = true;
+	const MANUAL = false;
 
 	const interval = 2000;
 	const memoryClient = createMemoryClient({
-		miningConfig: {
-			type: 'interval',
-			blockTime: interval,
-		},
+		miningConfig: MANUAL
+			? {
+					type: 'manual',
+				}
+			: {
+					type: 'interval',
+					blockTime: interval,
+				},
 		// loggingLevel: 'debug',
 	});
-	// setInterval(() => {
-	// 	console.log(`mining...`);
-	// 	memoryClient.tevmMine();
-	// }, interval);
+	if (MANUAL) {
+		setInterval(async () => {
+			console.log(`mining...`);
+			const result = await memoryClient.tevmMine();
+			// console.log(`...complete`, result);
+			if (result.blockHashes) {
+				for (const blockHash of result.blockHashes) {
+					// const numberOfTransactions = await memoryClient.getBlockTransactionCount({blockHash});
+					// console.log({numberOfTransactions});
+					const block = await memoryClient.getBlock({blockHash, includeTransactions: true});
+					console.log(block.transactions.map((v) => `tx ${v.hash} included`));
+				}
+			}
+		}, interval);
+	}
+
 	const client = USE_TEVM ? memoryClient : createCurriedJSONRPC('http://localhost:8545');
 
 	let provider: EIP1193ProviderWithoutEvents = client as any;
@@ -66,12 +83,19 @@ async function main() {
 		account,
 	});
 
-	const txHash = await walletClient.sendTransaction({});
+	const txHash = await walletClient.sendTransaction({
+		type: 'eip1559',
+		gas: 60000n,
+		maxFeePerGas: 1000000n,
+		maxPriorityFeePerGas: 100000n,
+		nonce: 0,
+	});
 
 	await wait(interval + 1000);
 	console.log(`should be mined by then`);
 	let receipt;
 	try {
+		console.log(`getting receipt for ${txHash}...`);
 		receipt = await publicClient.getTransactionReceipt({hash: txHash});
 	} catch (err) {
 		console.error(err);
